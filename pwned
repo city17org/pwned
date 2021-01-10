@@ -1,0 +1,73 @@
+#!/bin/sh
+#
+# Copyright (c) 2021 Sean Davies <sean@city17.org>
+#
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+die()
+{
+	echo "$1" 1>&2
+	exit 1
+}
+
+command -v curl >/dev/null || die "${0##*/}: curl: command not found"
+
+# support both bsd and linux sha1 message-digest commands
+for cmd in sha1 sha1sum; do
+	if command -v ${cmd} >/dev/null; then
+		_sha1=${cmd}
+		break
+	fi
+done
+[ -n "${_sha1}" ] || die "${0##*/}: sha1: command not found"
+
+[ "$#" -eq 0 ] || die "usage: ${0##*/}"
+
+IFS=''
+stty -echo
+printf "Password:"
+read -r password
+printf "\n"
+stty echo
+[ -n "${password}" ] || die "${0##*/}: empty password"
+
+passwordhash=$(printf "%s" "$password" | ${_sha1})
+unset password
+
+hashprefix=$(echo "$passwordhash" | cut -c 1-5)
+hashsuffix=$(echo "$passwordhash" | cut -c 6-40)
+
+url="https://api.pwnedpasswords.com/range/${hashprefix}"
+response=$(curl -sS -o - -w "%{http_code}" -H "Add-Padding: true" "${url}")
+
+http_status=$(echo "${response}" \
+  | tail -1 \
+  | sed 's/.*\(...\)$/\1/')
+case ${http_status} in
+200)	;;
+000)	exit 1 ;;
+*)	die "${0##*/}: curl: ${http_status}" ;;
+esac
+
+count=$(echo "${response}" \
+  | grep -i "${hashsuffix}" \
+  | cut -d : -f 2 \
+  | tr -d '\r')
+# padding rows return a count of 0, avoid a false positive
+if [ -z "${count}" ] || [ "${count}" = "0" ]; then
+	echo "Good news - no pwnage found!"
+else
+	echo "Oh no - pwned!"
+	echo "This password has been seen ${count} times before"
+	
+fi
