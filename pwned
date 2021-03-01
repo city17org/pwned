@@ -69,5 +69,4 @@ if [ -z "${count}" ] || [ "${count}" = "0" ]; then
 else
 	echo "Oh no - pwned!"
 	echo "This password has been seen ${count} times before"
-	
 fi
