@@ -29,8 +29,6 @@ if [ "$#" -ne 0 ]; then
 	usage
 fi
 
-command -v curl >/dev/null || die "${0##*/}: curl: command not found"
-
 # support both bsd and linux sha1 message-digest commands
 for cmd in sha1 sha1sum; do
 	if command -v ${cmd} >/dev/null; then
@@ -38,7 +36,14 @@ for cmd in sha1 sha1sum; do
 		break
 	fi
 done
-[ -n "${_sha1}" ] || die "${0##*/}: sha1: command not found"
+
+if [ -z "${_sha1}" ]; then
+	die "${0##*/}: sha1: command not found"
+fi
+
+if ! command -v curl >/dev/null; then
+	die "${0##*/}: curl: command not found"
+fi
 
 IFS=''
 stty -echo
@@ -46,7 +51,9 @@ printf "Password:"
 read -r password
 printf "\n"
 stty echo
-[ -n "${password}" ] || die "${0##*/}: empty password"
+if [ -z "${password}" ]; then
+	die "${0##*/}: empty password"
+fi
 
 passwordhash=$(printf "%s" "${password}" | ${_sha1})
 unset password
