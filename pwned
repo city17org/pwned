@@ -20,6 +20,15 @@ die()
 	exit 1
 }
 
+usage()
+{
+	die "usage: ${0##*/}"
+}
+
+if [ "$#" -ne 0 ]; then
+	usage
+fi
+
 command -v curl >/dev/null || die "${0##*/}: curl: command not found"
 
 # support both bsd and linux sha1 message-digest commands
@@ -30,8 +39,6 @@ for cmd in sha1 sha1sum; do
 	fi
 done
 [ -n "${_sha1}" ] || die "${0##*/}: sha1: command not found"
-
-[ "$#" -eq 0 ] || die "usage: ${0##*/}"
 
 IFS=''
 stty -echo
