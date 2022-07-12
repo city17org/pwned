@@ -64,19 +64,15 @@ hashsuffix=$(echo "${passwordhash}" | cut -c 6-40)
 url="https://api.pwnedpasswords.com/range/${hashprefix}"
 response=$(curl -sS -o - -w "%{http_code}" -H "Add-Padding: true" "${url}")
 
-http_status=$(echo "${response}" \
-  | tail -1 \
-  | sed 's/.*\(...\)$/\1/')
+http_status=$(echo "${response}" | tail -1 | sed 's/.*\(...\)$/\1/')
 case ${http_status} in
 200)	;;
 000)	exit 1 ;;
 *)	die "${0##*/}: curl: ${http_status}" ;;
 esac
 
-count=$(echo "${response}" \
-  | grep -i "${hashsuffix}" \
-  | cut -d : -f 2 \
-  | tr -d '\r')
+count=$(echo "${response}" | grep -i "${hashsuffix}" | \
+	cut -d : -f 2 | tr -d '\r')
 # padding rows return a count of 0, avoid a false positive
 if [ -z "${count}" ] || [ "${count}" = "0" ]; then
 	echo "Good news - no pwnage found!"
