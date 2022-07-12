@@ -41,11 +41,11 @@ printf "\n"
 stty echo
 [ -n "${password}" ] || die "${0##*/}: empty password"
 
-passwordhash=$(printf "%s" "$password" | ${_sha1})
+passwordhash=$(printf "%s" "${password}" | ${_sha1})
 unset password
 
-hashprefix=$(echo "$passwordhash" | cut -c 1-5)
-hashsuffix=$(echo "$passwordhash" | cut -c 6-40)
+hashprefix=$(echo "${passwordhash}" | cut -c 1-5)
+hashsuffix=$(echo "${passwordhash}" | cut -c 6-40)
 
 url="https://api.pwnedpasswords.com/range/${hashprefix}"
 response=$(curl -sS -o - -w "%{http_code}" -H "Add-Padding: true" "${url}")
