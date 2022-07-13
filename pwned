@@ -45,14 +45,16 @@ if ! command -v curl >/dev/null; then
 	die "${0##*/}: curl: command not found"
 fi
 
-IFS=''
-stty -echo
-printf "Password:"
-read -r password
-printf "\n"
-stty echo
-if [ -z "${password}" ]; then
-	die "${0##*/}: empty password"
+if [ -t 0 ]; then
+	printf "Password:"
+	stty -echo && IFS= read -r password
+	stty echo
+	echo
+	if [ -z "${password}" ]; then
+		die "${0##*/}: empty password"
+	fi
+else
+	die "${0##*/}: stdin isn't a terminal"
 fi
 
 passwordhash=$(printf "%s" "${password}" | ${_sha1})
