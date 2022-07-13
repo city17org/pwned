@@ -75,7 +75,7 @@ esac
 
 count=$(echo "${response}" | grep -i "${hashsuffix}" | \
 	cut -d : -f 2 | tr -d '\r')
-# padding rows return a count of 0, avoid a false positive
+# padded entries always have a password count of 0 and can be discarded
 if [ -z "${count}" ] || [ "${count}" = "0" ]; then
 	echo "Good news - no pwnage found!"
 else
