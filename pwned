@@ -73,7 +73,7 @@ case ${http_status} in
 *)	die "${0##*/}: curl: ${http_status} ${response%???}" ;;
 esac
 
-count=$(echo "${response}" | grep -i "${hashsuffix}" | \
+count=$(echo "${response%???}" | grep -i "${hashsuffix}" | \
 	cut -d : -f 2 | tr -d '\r')
 # padded entries always have a password count of 0 and can be discarded
 if [ -z "${count}" ] || [ "${count}" = "0" ]; then
