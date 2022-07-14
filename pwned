@@ -70,7 +70,7 @@ http_status=$(echo "${response}" | tail -1 | sed 's/.*\(...\)$/\1/')
 case ${http_status} in
 200)	;;
 000)	exit 1 ;;
-*)	die "${0##*/}: curl: ${http_status}" ;;
+*)	die "${0##*/}: curl: ${http_status} ${response%???}" ;;
 esac
 
 count=$(echo "${response}" | grep -i "${hashsuffix}" | \
