@@ -1,0 +1,48 @@
+.\"
+.\"Copyright (c) 2022 Sean Davies <sean@city17.org>
+.\"
+.\"Permission to use, copy, modify, and distribute this software for any
+.\"purpose with or without fee is hereby granted, provided that the above
+.\"copyright notice and this permission notice appear in all copies.
+.\"
+.\"THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\"WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\"MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\"ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\"WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\"ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\"OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd $Mdocdate: July 14 2022 $
+.Dt PWNED 8
+.Os
+.Sh NAME
+.Nm pwned
+.Nd query the Have I Been Pwned password database
+.Sh SYNOPSIS
+.Nm
+.Sh DESCRIPTION
+.Nm
+is a utility that checks if a password has been exposed in a known data
+breach by querying the
+.Lk https://haveibeenpwned.com
+database.
+.Pp
+When run, the user will be prompted to enter the password to query.
+The input will not be echoed to the screen.
+.Sh EXIT STATUS
+.Ex -std
+.Sh EXAMPLES
+.Bd -literal -offset indent
+$ ./pwned
+Password:
+Oh no - pwned!
+This password has been seen 24077 times before
+.Ed
+.Sh SEE ALSO
+.Lk https://haveibeenpwned.com/API/V3#PwnedPasswords
+.Sh AUTHORS
+.An Sean Davies Aq Mt sean@city17.org
+.Sh CAVEATS
+Depends on
+.Xr curl 1 .
